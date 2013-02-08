@@ -171,66 +171,72 @@ GNU General Public License for more details.
 
 class PS2X {
 public:
-boolean Button(uint16_t);
-unsigned int ButtonDataByte();
-boolean NewButtonState();
-boolean NewButtonState(unsigned int);
-boolean ButtonPressed(unsigned int);
-boolean ButtonReleased(unsigned int);
-void read_gamepad();
-boolean  read_gamepad(boolean, byte);
-byte readType();
-byte config_gamepad(uint8_t, uint8_t, uint8_t, uint8_t);
-byte config_gamepad(uint8_t, uint8_t, uint8_t, uint8_t, bool, bool);
-void enableRumble();
-bool enablePressures();
-byte Analog(byte);
-void reconfig_gamepad();
+	boolean Button(uint16_t);
+	unsigned int ButtonDataByte();
+	boolean NewButtonState();
+	boolean NewButtonState(unsigned int);
+	boolean ButtonPressed(unsigned int);
+	boolean ButtonReleased(unsigned int);
+	void read_gamepad();
+	boolean  read_gamepad(boolean, byte);
+	byte readType();
+	byte config_gamepad(uint8_t, uint8_t, uint8_t, uint8_t);
+	byte config_gamepad(uint8_t, uint8_t, uint8_t, uint8_t, bool, bool);
+	void enableRumble();
+	bool enablePressures();
+	byte Analog(byte);
+	void reconfig_gamepad();
 private:
 
-inline void CLK_SET(void);
-inline void CLK_CLR(void);
-inline void CMD_SET(void);
-inline void CMD_CLR(void);
-inline void ATT_SET(void);
-inline void ATT_CLR(void);
-inline bool DAT_CHK(void);
+	inline void CLK_SET(void);
+	inline void CLK_CLR(void);
+	inline void CMD_SET(void);
+	inline void CMD_CLR(void);
+	inline void ATT_SET(void);
+	inline void ATT_CLR(void);
+	inline bool DAT_CHK(void);
 
-unsigned char _gamepad_shiftinout (char);
-unsigned char PS2data[21];
-void sendCommandString(byte*, byte);
-unsigned char i;
-unsigned int last_buttons;
-unsigned int buttons;
-#ifdef __AVR__
-uint8_t maskToBitNum(uint8_t);
-uint8_t _clk_mask; 
-volatile uint8_t *_clk_oreg;
-uint8_t _cmd_mask; 
-volatile uint8_t *_cmd_oreg;
-uint8_t _att_mask; 
-volatile uint8_t *_att_oreg;
-uint8_t _dat_mask; 
-volatile uint8_t *_dat_ireg;
-#else
-uint8_t maskToBitNum(uint8_t);
-uint16_t 				_clk_mask; 
-volatile uint32_t *		_clk_lport_set;
-volatile uint32_t *		_clk_lport_clr;
-uint16_t 				_cmd_mask; 
-volatile uint32_t *		_cmd_lport_set;
-volatile uint32_t *		_cmd_lport_clr;
-uint16_t 				_att_mask; 
-volatile uint32_t *		_att_lport_set;
-volatile uint32_t *		_att_lport_clr;
-uint16_t 				_dat_mask; 
-volatile uint32_t *		_dat_lport;
+	unsigned char _gamepad_shiftinout (char);
+	unsigned char PS2data[21];
+	void sendCommandString(byte*, byte);
+	unsigned char i;
+	unsigned int last_buttons;
+	unsigned int buttons;
+#if defined(__AVR__)
+	uint8_t maskToBitNum(uint8_t);
+	uint8_t _clk_mask; 
+	volatile uint8_t *_clk_oreg;
+	uint8_t _cmd_mask; 
+	volatile uint8_t *_cmd_oreg;
+	uint8_t _att_mask; 
+	volatile uint8_t *_att_oreg;
+	uint8_t _dat_mask; 
+	volatile uint8_t *_dat_ireg;
+#elif defined(__SAM3X8E__)
+	// Defines for Arduino UNO.
+	uint8_t 				_clk;
+	uint8_t 				_cmd;
+	uint8_t 				_att;
+	uint8_t 				_dat;
+#else 
+	uint8_t maskToBitNum(uint8_t);
+	uint16_t 				_clk_mask; 
+	volatile uint32_t *		_clk_lport_set;
+	volatile uint32_t *		_clk_lport_clr;
+	uint16_t 				_cmd_mask; 
+	volatile uint32_t *		_cmd_lport_set;
+	volatile uint32_t *		_cmd_lport_clr;
+	uint16_t 				_att_mask; 
+	volatile uint32_t *		_att_lport_set;
+	volatile uint32_t *		_att_lport_clr;
+	uint16_t 				_dat_mask; 
+	volatile uint32_t *		_dat_lport;
 #endif
-unsigned long last_read;
-byte read_delay;
-byte controller_type;
-boolean en_Rumble;
-boolean en_Pressures;
+	unsigned long last_read;
+	byte read_delay;
+	byte controller_type;
+	boolean en_Rumble;
+	boolean en_Pressures;
 
 };
 

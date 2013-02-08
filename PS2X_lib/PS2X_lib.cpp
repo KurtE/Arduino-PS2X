@@ -2,7 +2,10 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdint.h>
+
+#ifndef __SAM3X8E__
 #include <avr/io.h>
+#endif
 #if ARDUINO > 22
 #include "Arduino.h"
 #else
@@ -176,8 +179,13 @@ byte PS2X::config_gamepad(uint8_t clk, uint8_t cmd, uint8_t att, uint8_t dat, bo
  _att_oreg = portOutputRegister(digitalPinToPort(att));
  _dat_mask = digitalPinToBitMask(dat);
  _dat_ireg = portInputRegister(digitalPinToPort(dat));
+#elif defined(__SAM3X8E__)
+	// Defines for Arduino UNO.
+	_clk = clk;
+	_cmd = cmd;
+	_att = att;
+	_dat = dat;
 #else
-
 	uint32_t            lport;                   // Port number for this pin
 	_clk_mask = digitalPinToBitMask(clk); 
 	lport = digitalPinToPort(clk);
@@ -202,10 +210,12 @@ byte PS2X::config_gamepad(uint8_t clk, uint8_t cmd, uint8_t att, uint8_t dat, bo
   pinMode(clk, OUTPUT); //configure ports
   pinMode(att, OUTPUT);
   pinMode(cmd, OUTPUT);
-  pinMode(dat, INPUT);
 
 #if defined(__AVR__)
+  pinMode(dat, INPUT);
   digitalWrite(dat, HIGH); //enable pull-up 
+#elif defined(__SAM3X8E__)
+  pinMode(dat, INPUT_PULLUP);
 #endif
     
    CMD_SET(); // SET(*_cmd_oreg,_cmd_mask);
@@ -394,7 +404,7 @@ void PS2X::reconfig_gamepad(){
 }
 
 
-#ifdef __AVR__
+#if defined(__AVR__)
 inline void  PS2X::CLK_SET(void) {
 	
    register uint8_t old_sreg = SREG;
@@ -442,8 +452,38 @@ inline bool PS2X::DAT_CHK(void) {
 	return (*_dat_ireg & _dat_mask)? true : false;
 }
 
+#elif defined(__SAM3X8E__)
+inline void  PS2X::CLK_SET(void) {
+	digitalWrite(_clk, HIGH);
+}
+
+inline void  PS2X::CLK_CLR(void) {
+	digitalWrite(_clk, LOW);
+}
+
+inline void  PS2X::CMD_SET(void) {
+	digitalWrite(_cmd, HIGH);
+}
+
+inline void  PS2X::CMD_CLR(void) {
+	digitalWrite(_cmd, LOW);
+}
+
+inline void  PS2X::ATT_SET(void) {
+	digitalWrite(_att, HIGH);
+}
+
+inline void PS2X::ATT_CLR(void) {
+	digitalWrite(_att, LOW);
+}
+
+inline bool PS2X::DAT_CHK(void) {
+	return digitalRead(_dat);
+}
+
 #else
-// On pic32, use the set/clr registers to make them atomic...inline void  PS2X::CLK_SET(void) {
+// On pic32, use the set/clr registers to make them atomic...
+inline void  PS2X::CLK_SET(void) {
 	*_clk_lport_set |= _clk_mask;
 }
 
