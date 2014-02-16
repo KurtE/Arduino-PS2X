@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdint.h>
 
-#ifndef __SAM3X8E__
+#if !defined(__SAM3X8E__) && !defined(__arm__)
 #include <avr/io.h>
 #endif
 #if ARDUINO > 22
@@ -179,8 +179,8 @@ byte PS2X::config_gamepad(uint8_t clk, uint8_t cmd, uint8_t att, uint8_t dat, bo
  _att_oreg = portOutputRegister(digitalPinToPort(att));
  _dat_mask = digitalPinToBitMask(dat);
  _dat_ireg = portInputRegister(digitalPinToPort(dat));
-#elif defined(__SAM3X8E__)
-	// Defines for Arduino UNO.
+#elif defined(__SAM3X8E__) || defined(__arm__)
+	// Defines for Arduino Due or Teensy 3.
 	_clk = clk;
 	_cmd = cmd;
 	_att = att;
@@ -214,7 +214,7 @@ byte PS2X::config_gamepad(uint8_t clk, uint8_t cmd, uint8_t att, uint8_t dat, bo
 #if defined(__AVR__)
   pinMode(dat, INPUT);
   digitalWrite(dat, HIGH); //enable pull-up 
-#elif defined(__SAM3X8E__)
+#elif defined(__SAM3X8E__) || defined(__arm__)
   pinMode(dat, INPUT_PULLUP);
 #endif
     
@@ -452,7 +452,7 @@ inline bool PS2X::DAT_CHK(void) {
 	return (*_dat_ireg & _dat_mask)? true : false;
 }
 
-#elif defined(__SAM3X8E__)
+#elif defined(__SAM3X8E__) || defined(__arm__)
 inline void  PS2X::CLK_SET(void) {
 	digitalWrite(_clk, HIGH);
 }

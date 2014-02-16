@@ -212,13 +212,14 @@ private:
 	volatile uint8_t *_att_oreg;
 	uint8_t _dat_mask; 
 	volatile uint8_t *_dat_ireg;
-#elif defined(__SAM3X8E__)
-	// Defines for Arduino UNO.
+#elif defined(__SAM3X8E__) || defined(__arm__)
+	// Defines for Arduino Due.
 	uint8_t 				_clk;
 	uint8_t 				_cmd;
 	uint8_t 				_att;
 	uint8_t 				_dat;
 #else 
+    // Chipkit should probably figure out their defines 
 	uint8_t maskToBitNum(uint8_t);
 	uint16_t 				_clk_mask; 
 	volatile uint32_t *		_clk_lport_set;
